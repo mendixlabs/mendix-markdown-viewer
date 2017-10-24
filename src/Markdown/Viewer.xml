@@ -12,6 +12,32 @@
                <attributeType name="String" />
            </attributeTypes>
         </property>
+        <!-- MARKDOWN OPTIONS -->
+        <property key="optHtml" type="boolean" defaultValue="false">
+           <caption>HTML in source</caption>
+           <category>Markdown options</category>
+           <description></description>
+        </property>
+        <property key="optxHtmlOut" type="boolean" defaultValue="true">
+           <caption>Use '/' to close single tags</caption>
+           <category>Markdown options</category>
+           <description></description>
+        </property>
+        <property key="optBreaks" type="boolean" defaultValue="true">
+           <caption>Convert '\n'</caption>
+           <category>Markdown options</category>
+           <description>Converts line breaks into &lt;BR&gt; elements in paragraphs</description>
+        </property>
+        <property key="optLinkify" type="boolean" defaultValue="true">
+           <caption>Autoconvert URLs</caption>
+           <category>Markdown options</category>
+           <description></description>
+        </property>
+        <property key="optTypographer" type="boolean" defaultValue="true">
+           <caption>Language neutral replacement</caption>
+           <category>Markdown options</category>
+           <description>See the following URL for an explanation: https://github.com/markdown-it/markdown-it#init-with-presets-and-options</description>
+        </property>
 
     </properties>
 </widget>

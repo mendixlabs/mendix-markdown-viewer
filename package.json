@@ -64,11 +64,13 @@
     "webpack": "^3.6.0",
     "webpack-archive-plugin": "^3.0.0",
     "webpack-strip-block": "^0.2.0",
-    "xml-webpack-plugin": "^0.0.2",
-    "webpack-visualizer-plugin": "^0.1.11"
+    "webpack-visualizer-plugin": "^0.1.11",
+    "xml-webpack-plugin": "^0.0.2"
   },
   "dependencies": {
     "markdown-it": "^8.4.0",
+    "markdown-it-container": "^2.0.0",
+    "markdown-it-prism": "^1.1.1",
     "prismjs": "^1.8.1"
   }
 }
