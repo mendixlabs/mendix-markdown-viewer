@@ -1,26 +1,21 @@
-import Promise from 'dojo/promise/Promise';
+import Deferred from 'dojo/Deferred';
 
-export const getData = params => new Promise((resolve, reject) => {
+export const getData = params => {
+    const deferred = new Deferred();
     mx.data.get({
         params,
-        callback: resolve,
-        error: reject,
+        callback: deferred.resolve,
+        error: deferred.reject,
     });
-});
+    return deferred;
+};
 
-export const getAttribute = (obj, attr) => new Promise((resolve, reject) => {
-    if (!attr) {
-        return reject(new Error('Should have an attribute'));
-    }
-    if (!obj || 'undefined' === typeof obj.fetch) {
-        return reject(new Error('Object should be a Mendix object'));
-    }
+export const fetchAttr = (obj, attr) => {
+    const deferred = new Deferred();
     try {
-        obj.fetch(attr, val => {
-            resolve(val);
-        });
+        obj.fetch(attr, val => deferred.resolve(val));
     } catch (e) {
-        reject(e);
+        deferred.reject(e);
     }
-
-});
+    return deferred;
+};

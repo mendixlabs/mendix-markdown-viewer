@@ -15,9 +15,9 @@
   "widget": {
     "package": "Markdown",
     "filesFolder": "widget",
-    "libraries": false,
+    "libraries": true,
     "core": false,
-    "path": "/Volumes/C/Projects/MendixProjects/MarkdownViewer-main/"
+    "path": false
   },
   "keywords": [
     "widget",
@@ -71,6 +71,7 @@
     "markdown-it": "^8.4.0",
     "markdown-it-container": "^2.0.0",
     "markdown-it-prism": "^1.1.1",
-    "prismjs": "^1.8.1"
+    "prismjs": "^1.8.4",
+    "simplemde": "^1.11.2"
   }
 }

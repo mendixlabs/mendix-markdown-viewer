@@ -1,35 +1,19 @@
 import { defineWidget } from '@/helpers/widget';
 import { log, runCallback } from '@/helpers';
+import Libraries from 'Libraries';
 
 import domClass from 'dojo/dom-class';
 import domAttr from 'dojo/dom-attr';
 import html from 'dojo/html';
 
-import Markdown from 'markdown-it';
-import prism from 'markdown-it-prism';
-import MarkdownItContainer from 'markdown-it-container';
+// The following code will be stripped with our webpack loader and should only be used if you plan on doing styling
+/* develblock:start */
+import loadcss from 'loadcss';
+loadcss(`/widgets/Markdown/widget/ui/Viewer.css`);
+/* develblock:end */
 
-const AlertContainer = md => {
-    return {
-        validate: params => {
-            return params.trim().match(/^alert\s+(.*)$/);
-        },
-        render: (tokens, idx) => {
-            const m = tokens[ idx ].info.trim().match(/^alert\s+(.*)$/);
-
-            if (1 === tokens[ idx ].nesting) {
-                // opening tag
-                return `<div class="alert alert-${md.utils.escapeHtml(m[ 1 ])}">\n`;
-            }
-
-            // closing tag
-            return '</div>\n';
-        },
-    };
-};
-
-import './Viewer.scss';
 import 'prismjs/themes/prism.css';
+import './Viewer.scss';
 
 export default defineWidget('Viewer', false, {
 
@@ -68,16 +52,13 @@ export default defineWidget('Viewer', false, {
 
     _createConverter() {
         log.call(this, '_createConverter');
-        this._md = new Markdown({
+        this.createMD({
             html: this.optHtml,
             xhtmlOut: this.optxHtmlOut,
             linkify: this.optLinkify,
             typographer: this.optTypographer,
             breaks: this.optBreaks,
         });
-
-        this._md.use(prism);
-        this._md.use(MarkdownItContainer, 'alert', AlertContainer(this._md));
     },
 
     _updateRendering(cb) {
@@ -90,7 +71,6 @@ export default defineWidget('Viewer', false, {
 
                     html.set(this.domNode, alertHTML);
                     domClass.remove(this.domNode, 'hidden');
-
                 } else {
                     domClass.add(this.domNode, 'hidden');
                 }
@@ -120,7 +100,13 @@ export default defineWidget('Viewer', false, {
                     });
                 },
             });
+
+            this.subscribe({
+                guid: this._obj.getGuid(),
+                attr: this.attrText,
+                callback: this._updateRendering,
+            });
         }
     },
 
-});
+}, Libraries);

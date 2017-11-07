@@ -1,0 +1,42 @@
+<widget id="Markdown.widget.Editor" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
+    <name>Markdown Editor</name>
+    <description>Edit your Markdown with this awesome widget</description>
+    <icon>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</icon>
+    <properties>
+        <!-- DATA SOURCE -->
+        <property key="mdAttr" type="attribute" required="true" isPath="optional" pathType="reference">
+           <caption>Markdown attribute</caption>
+           <category>Data Source</category>
+           <description>Attribute that will contain Markdown text</description>
+           <attributeTypes>
+               <attributeType name="String" />
+           </attributeTypes>
+        </property>
+        <!-- MARKDOWN OPTIONS -->
+        <property key="optHtml" type="boolean" defaultValue="false">
+           <caption>HTML in source</caption>
+           <category>Markdown options</category>
+           <description></description>
+        </property>
+        <property key="optxHtmlOut" type="boolean" defaultValue="true">
+           <caption>Use '/' to close single tags</caption>
+           <category>Markdown options</category>
+           <description></description>
+        </property>
+        <property key="optBreaks" type="boolean" defaultValue="true">
+           <caption>Convert '\n'</caption>
+           <category>Markdown options</category>
+           <description>Converts line breaks into &lt;BR&gt; elements in paragraphs</description>
+        </property>
+        <property key="optLinkify" type="boolean" defaultValue="true">
+           <caption>Autoconvert URLs</caption>
+           <category>Markdown options</category>
+           <description></description>
+        </property>
+        <property key="optTypographer" type="boolean" defaultValue="true">
+           <caption>Language neutral replacement</caption>
+           <category>Markdown options</category>
+           <description>See the following URL for an explanation: https://github.com/markdown-it/markdown-it#init-with-presets-and-options</description>
+        </property>
+    </properties>
+</widget>
