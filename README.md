@@ -1,7 +1,7 @@
-Markdown Viewer
+Markdown Viewer & Editor
 ===
 
-This widget will show HTML, converted from Markdown
+This widget will show HTML, converted from Markdown. There is also a Markdown Editor
 
 ## Typical usage scenario
 
