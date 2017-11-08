@@ -17,7 +17,7 @@
     "filesFolder": "widget",
     "libraries": true,
     "core": false,
-    "path": false
+    "path": "/Volumes/C/Projects/MendixProjects/Documentation-main/"
   },
   "keywords": [
     "widget",
@@ -70,7 +70,6 @@
   "dependencies": {
     "markdown-it": "^8.4.0",
     "markdown-it-container": "^2.0.0",
-    "markdown-it-prism": "^1.1.1",
     "prismjs": "^1.8.4",
     "simplemde": "^1.11.2"
   }

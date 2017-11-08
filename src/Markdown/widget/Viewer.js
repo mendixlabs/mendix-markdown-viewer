@@ -13,6 +13,9 @@ loadcss(`/widgets/Markdown/widget/ui/Viewer.css`);
 /* develblock:end */
 
 import 'prismjs/themes/prism.css';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+import 'prismjs/plugins/toolbar/prism-toolbar.css';
+
 import './Viewer.scss';
 
 export default defineWidget('Viewer', false, {
@@ -34,7 +37,10 @@ export default defineWidget('Viewer', false, {
     postCreate() {
         log.call(this, 'postCreate', this._WIDGET_VERSION);
         domAttr.set(this.domNode, 'data-widget-version', this._WIDGET_VERSION);
+        domClass.toggle(this.domNode, 'markdown-viewer', true);
         this._createConverter();
+
+        // window._VIEWER = this; // TODO: Remove this!
     },
 
     update(obj, cb) {
@@ -67,10 +73,10 @@ export default defineWidget('Viewer', false, {
             this._obj.fetch(this.attrText, val => {
                 this._text = val;
                 if (val && '' !== val) {
-                    const alertHTML = this._md.render(this._text);
-
-                    html.set(this.domNode, alertHTML);
-                    domClass.remove(this.domNode, 'hidden');
+                    this._getHTML(this._text, result => {
+                        html.set(this.domNode, result);
+                        domClass.remove(this.domNode, 'hidden');
+                    });
                 } else {
                     domClass.add(this.domNode, 'hidden');
                 }

@@ -8,6 +8,7 @@ import Libraries from 'Libraries';
 import domAttr from 'dojo/dom-attr';
 import domClass from 'dojo/dom-class';
 import debounce from 'dojo/debounce';
+import dojoArray from 'dojo/_base/array';
 
 import template from './Editor.template.html';
 
@@ -18,11 +19,14 @@ loadcss(`/widgets/Markdown/widget/ui/Editor.css`);
 /* develblock:end */
 
 import 'simplemde/dist/simplemde.min.css';
+
 import 'prismjs/themes/prism.css';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+import 'prismjs/plugins/toolbar/prism-toolbar.css';
+
 import './Editor.scss';
 
 import SimpleMDE from 'simplemde';
-import 'codemirror/addon/display/rulers';
 
 // Blatantly copied from SimpleMDE to do my own inserts
 function _replaceSelection(cm, active, startEnd, url) {
@@ -86,7 +90,7 @@ export default defineWidget('Editor', template, {
         this._addOnDestroyFuncs();
         this._createConverter();
 
-        window._WIDGET = this; // TODO: REMOVE
+        // window._WIDGET = this; // TODO: REMOVE
     },
 
     _createConverter() {
@@ -136,8 +140,12 @@ export default defineWidget('Editor', template, {
         this._editor = new SimpleMDE({
             element: this.textAreaNode,
             autofocus: true,
-            previewRender: plainText => {
-                return this._md.render(plainText); // Returns HTML from a custom parser
+            indentWithTabs: false,
+            previewRender: (plainText, preview) => {
+                const previewEl = preview;
+                this._getHTML(plainText, html => {
+                    previewEl.innerHTML = html;
+                });
             },
             insertTexts: {
                 horizontalRule: [
@@ -168,12 +176,10 @@ export default defineWidget('Editor', template, {
             const val = this._editor.value();
             this._obj.set(this.mdAttr, val);
         }, 250));
-
-        window._EDITOR = this._editor; // TODO: REMOVE
     },
 
     _getToolbars() {
-        return [
+        const toolbarArray = [
             'bold',
             'italic',
             'heading',
@@ -206,9 +212,11 @@ export default defineWidget('Editor', template, {
             '|',
             'guide',
             '|',
+            this._snippetsUsed() ? '|' : null,
             'undo',
             'redo',
         ];
+        return dojoArray.filter(toolbarArray, item => null !== item);
     },
 
     _setVisibility(visible) {

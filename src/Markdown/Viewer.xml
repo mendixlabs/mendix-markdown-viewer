@@ -38,6 +38,31 @@
            <category>Markdown options</category>
            <description>See the following URL for an explanation: https://github.com/markdown-it/markdown-it#init-with-presets-and-options</description>
         </property>
-
+        <!-- SNIPPETS -->
+        <property key="snippetEntity" type="entity" required="false">
+           <caption>Snippet entity</caption>
+           <category>Snippets</category>
+           <description>Select entitity for snippets</description>
+        </property>
+        <property key="snippetKeyAttr" type="attribute" entityProperty="snippetEntity" required="false">
+           <caption>Key attribute</caption>
+           <category>Snippets</category>
+           <description>Key that is used to identify a snippet</description>
+           <attributeTypes>
+               <attributeType name="AutoNumber" />
+               <attributeType name="Enum" />
+               <attributeType name="HashString" />
+               <attributeType name="Integer" />
+               <attributeType name="String" />
+           </attributeTypes>
+        </property>
+        <property key="snippetContentAttr" type="attribute" entityProperty="snippetEntity" required="false">
+           <caption>Content attribute</caption>
+           <category>Snippets</category>
+           <description>Content for snippet</description>
+           <attributeTypes>
+               <attributeType name="String" />
+           </attributeTypes>
+        </property>
     </properties>
 </widget>
