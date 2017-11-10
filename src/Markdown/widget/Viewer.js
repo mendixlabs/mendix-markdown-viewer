@@ -50,7 +50,13 @@ export default defineWidget('Viewer', false, {
         this._resetSubscriptions();
 
         if (obj && this.attrText) {
-            this._updateRendering(cb);
+            if (this._snippetsUsed()) {
+                this._getSnippets(() => {
+                    this._updateRendering(cb);
+                });
+            } else {
+                this._updateRendering(cb);
+            }
         } else {
             runCallback.call(this, cb, 'update');
         }
@@ -73,10 +79,8 @@ export default defineWidget('Viewer', false, {
             this._obj.fetch(this.attrText, val => {
                 this._text = val;
                 if (val && '' !== val) {
-                    this._getHTML(this._text, result => {
-                        html.set(this.domNode, result);
-                        domClass.remove(this.domNode, 'hidden');
-                    });
+                    html.set(this.domNode, this._getHTML(this._text));
+                    domClass.remove(this.domNode, 'hidden');
                 } else {
                     domClass.add(this.domNode, 'hidden');
                 }

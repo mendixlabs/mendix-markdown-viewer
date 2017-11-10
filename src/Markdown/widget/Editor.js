@@ -113,7 +113,13 @@ export default defineWidget('Editor', template, {
         }
 
         if (this._obj) {
-            this._updateRendering(cb);
+            if (this._snippetsUsed()) {
+                this._getSnippets(() => {
+                    this._updateRendering(cb);
+                });
+            } else {
+                this._updateRendering(cb);
+            }
         } else {
             this._setVisibility(false);
             runCallback.call(this, cb, 'update');
@@ -141,11 +147,8 @@ export default defineWidget('Editor', template, {
             element: this.textAreaNode,
             autofocus: true,
             indentWithTabs: false,
-            previewRender: (plainText, preview) => {
-                const previewEl = preview;
-                this._getHTML(plainText, html => {
-                    previewEl.innerHTML = html;
-                });
+            previewRender: plainText => {
+                return this._getHTML(plainText);
             },
             insertTexts: {
                 horizontalRule: [

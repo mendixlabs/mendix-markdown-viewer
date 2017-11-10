@@ -4,6 +4,7 @@ import MarkdownItContainer from 'markdown-it-container';
 
 import dojoArray from 'dojo/_base/array';
 
+import { runCallback } from '@/helpers';
 import { defineWidget } from '@/helpers/widget';
 import { getData } from '@/helpers/data';
 
@@ -11,6 +12,8 @@ const oldSnippetCode = /{{% snippet file="([A-Za-z0-9.+-/]+)" %}}/g;
 const newSnippetCode = /@snippet\[([A-Za-z0-9./+-]+)\]/g;
 
 export default defineWidget('Libraries', null, {
+
+    _snippets: null,
 
     snippetEntity: null,
     snippetKeyAttr: null,
@@ -20,42 +23,48 @@ export default defineWidget('Libraries', null, {
         return "" !== this.snippetEntity && "" !== this.snippetKeyAttr && "" !== this.snippetContentAttr;
     },
 
-    _replaceSnippets(text, cb) {
+    _getSnippets(cb) {
+        logger.debug('Markdown.widgets.Libraries._getSnippets');
         if (this._obj && this._snippetsUsed()) {
+            getData({
+                xpath: `//${this.snippetEntity}`,
+            })
+                .then(res => {
+                    const snippets = {};
+                    dojoArray.forEach(res, r => {
+                        let key = r.get(this.snippetKeyAttr);
+                        if (0 === key.indexOf('/')) {
+                            key = key.slice(1);
+                        }
+                        snippets[ key ] = r.get(this.snippetContentAttr);
+                    });
+                    this._snippets = snippets;
+                    runCallback.call(this, cb, '_getSnippets snippets saved');
+                }, e => {
+                    logger.warn(this.id + '_getSnippets error', e);
+                    runCallback.call(this, cb, '_getSnippets no snippets');
+                });
+        } else {
+            runCallback.call(this, cb, '_getSnippets no snippets');
+        }
+    },
+
+    _replaceSnippets(text) {
+        if (this._obj && this._snippetsUsed() && this._snippets) {
             const matched = text.match(newSnippetCode);
             if (null !== matched && 0 < matched.length) {
-                getData({
-                    xpath: `//${this.snippetEntity}`,
-                })
-                    .then(res => {
-                        const snippets = {};
-                        dojoArray.forEach(res, r => {
-                            let key = r.get(this.snippetKeyAttr);
-                            if (0 === key.indexOf('/')) {
-                                key = key.slice(1);
-                            }
-                            snippets[ key ] = r.get(this.snippetContentAttr);
-                        });
 
-                        const newText = text.replace(newSnippetCode, (match, p1) => {
-                            const newContent = snippets[ p1 ];
-                            if ('undefined' !== typeof newContent) {
-                                return newContent;
-                            }
-                            return `!!! unknown snippet ***${p1}*** !!!`;
-                        });
-
-                        cb(newText);
-                    }, e => {
-                        logger.warn(this.id + '_replaceSnippets error', e);
-                        cb(text);
-                    });
-            } else {
-                cb(text);
+                return text.replace(newSnippetCode, (match, p1) => {
+                    const newContent = this._snippets[ p1 ];
+                    if ('undefined' !== typeof newContent) {
+                        return newContent;
+                    }
+                    return `!!! unknown snippet ***${p1}*** !!!`;
+                });
             }
-        } else {
-            cb(text);
+            return text;
         }
+        return text;
     },
 
     _elements: {
@@ -103,13 +112,8 @@ export default defineWidget('Libraries', null, {
         return renderText;
     },
 
-    _getHTML(text, cb) {
-        const replacedText = this._preReplace(text);
-
-        this._replaceSnippets(replacedText, snippetsReplaced => {
-            const html = this._md.render(snippetsReplaced);
-
-            cb(html);
-        });
+    _getHTML(text) {
+        const replacedText = this._replaceSnippets(this._preReplace(text));
+        return this._md.render(replacedText);
     },
 });
