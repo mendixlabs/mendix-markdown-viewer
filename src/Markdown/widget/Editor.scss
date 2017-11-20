@@ -7,3 +7,12 @@
     }
 }
 
+.select-snippet {
+    .autosuggest {
+        position: relative;
+    }
+    .bottombar {
+        position: absolute;
+        bottom: 20px;
+    }
+}

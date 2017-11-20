@@ -7,6 +7,7 @@ import Libraries from 'Libraries';
 
 import domAttr from 'dojo/dom-attr';
 import domClass from 'dojo/dom-class';
+import { create, place } from 'dojo/dom-construct';
 import debounce from 'dojo/debounce';
 import dojoArray from 'dojo/_base/array';
 
@@ -23,6 +24,9 @@ import 'simplemde/dist/simplemde.min.css';
 import 'prismjs/themes/prism.css';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 import 'prismjs/plugins/toolbar/prism-toolbar.css';
+import 'suggestions/dist/suggestions.css';
+
+import Suggestions from 'suggestions';
 
 import './Editor.scss';
 
@@ -90,7 +94,7 @@ export default defineWidget('Editor', template, {
         this._addOnDestroyFuncs();
         this._createConverter();
 
-        // window._WIDGET = this; // TODO: REMOVE
+        window._WIDGET = this; // TODO: REMOVE
     },
 
     _createConverter() {
@@ -171,6 +175,11 @@ export default defineWidget('Editor', template, {
                     "::: alert info\n",
                     "\n:::",
                 ],
+                snippet: [
+                    "",
+                    "@snippet[XXX]",
+                    "",
+                ],
             },
             toolbar: this._getToolbars(),
         });
@@ -215,11 +224,80 @@ export default defineWidget('Editor', template, {
             '|',
             'guide',
             '|',
+            this._snippetsUsed() ? {
+                name: "alert",
+                action: editor => {
+                    this._showPopup(editor);
+                },
+                className: "fa fa-paperclip",
+                title: "Snippet",
+            } : null,
             this._snippetsUsed() ? '|' : null,
             'undo',
             'redo',
         ];
         return dojoArray.filter(toolbarArray, item => null !== item);
+    },
+
+    _showPopup(editor) {
+        const popupContent = create('div');
+        const autoSuggestDiv = create('div', { className: 'autosuggest' }, popupContent);
+        const bar = create('div', { className: 'bottombar' }, popupContent);
+
+        const popupWindow = new mxui.widget.Window({
+            title: 'Select snippet',
+            width: 500,
+            height: 200,
+            resizable: true,
+            content: popupContent,
+            cssClass: 'select-snippet',
+            cssStyle: '',
+            onClose: () => {
+                this._suggestions = null;
+                this._suggestionBoxListener.remove && this._suggestionBoxListener.remove();
+                popupWindow.destroy();
+            },
+        });
+
+        const inputEl = create('input', { className: 'form-control'}, autoSuggestDiv);
+        const button = new mxui.widget.Button({
+            cssClasses: [ 'btn-success' ],
+            onClick: () => {
+                if (this._suggestions.selected) {
+                    const cm = editor.codemirror;
+                    const stat = this._editor.getState();
+
+                    _replaceSelection(cm, stat.snippet, [
+                        "",
+                        `@snippet[${this._suggestions.selected}]`,
+                        "",
+                    ]);
+
+                    this._suggestions = null;
+                    this._suggestionBoxListener.remove && this._suggestionBoxListener.remove();
+                    popupWindow.destroy();
+                }
+            },
+        });
+
+        button._setCaptionAttr('Select snippet');
+        button.disable();
+
+        place(button.domNode, bar);
+
+        const list = Object.keys(this._snippets);
+
+        this._suggestions = new Suggestions(inputEl, list);
+
+        this._suggestionBoxListener = this.connect(inputEl, 'change', () => {
+            if (this._suggestions.selected) {
+                button.enable();
+            } else {
+                button.disable();
+            }
+        });
+
+        popupWindow.show();
     },
 
     _setVisibility(visible) {
