@@ -1,12 +1,15 @@
+import {
+    defineWidget,
+    getData,
+    log,
+    runCallback,
+} from 'widget-base-helpers';
+
 import Markdown from 'markdown-it';
 import prism from '@/libs/markdown-it-prism';
 import MarkdownItContainer from 'markdown-it-container';
 
 import dojoArray from 'dojo/_base/array';
-
-import { runCallback } from '@/helpers';
-import { defineWidget } from '@/helpers/widget';
-import { getData } from '@/helpers/data';
 
 const oldSnippetCode = /{{% snippet file="([A-Za-z0-9.+-/]+)" %}}/g;
 const newSnippetCode = /@snippet\[([A-Za-z0-9./+-]+)\]/g;
@@ -18,6 +21,12 @@ export default defineWidget('Libraries', null, {
     snippetEntity: null,
     snippetKeyAttr: null,
     snippetContentAttr: null,
+
+    constructor() {
+        // These are used in the widget, so they are added to the widget
+        this.log = log.bind(this);
+        this.runCallback = runCallback.bind(this);
+    },
 
     _snippetsUsed() {
         return "" !== this.snippetEntity && "" !== this.snippetKeyAttr && "" !== this.snippetContentAttr;

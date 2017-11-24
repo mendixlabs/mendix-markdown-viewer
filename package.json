@@ -72,6 +72,7 @@
     "markdown-it-container": "^2.0.0",
     "prismjs": "^1.8.4",
     "simplemde": "^1.11.2",
-    "suggestions": "^1.3.2"
+    "suggestions": "^1.3.2",
+    "widget-base-helpers": "^1.0.3"
   }
 }

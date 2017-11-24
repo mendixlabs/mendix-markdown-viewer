@@ -1,6 +1,8 @@
-import { defineWidget } from '@/helpers/widget';
-import { log, runCallback } from '@/helpers';
-import { fetchAttr } from '@/helpers/data';
+import {
+    defineWidget,
+    fetchAttr,
+} from 'widget-base-helpers';
+
 import { fixFocusHandler } from '@/helpers/focus';
 
 import Libraries from 'Libraries';
@@ -86,19 +88,17 @@ export default defineWidget('Editor', template, {
 
     // Called after the widget is initialized
     postCreate() {
-        log.call(this, 'postCreate', this._WIDGET_VERSION);
+        this.log('postCreate', this._WIDGET_VERSION);
         domAttr.set(this.domNode, 'data-widget-version', this._WIDGET_VERSION);
 
         // Fix aspect focus handler. This mxui.wm.focus.onfocus screws with our editor. Disabling within our widget
         this._aspectHandler = fixFocusHandler(this.domNode);
         this._addOnDestroyFuncs();
         this._createConverter();
-
-        window._WIDGET = this; // TODO: REMOVE
     },
 
     _createConverter() {
-        log.call(this, '_createConverter');
+        this.log('_createConverter');
         this.createMD({
             html: this.optHtml,
             xhtmlOut: this.optxHtmlOut,
@@ -126,7 +126,7 @@ export default defineWidget('Editor', template, {
             }
         } else {
             this._setVisibility(false);
-            runCallback.call(this, cb, 'update');
+            this.runCallback(cb, 'update');
         }
     },
 
@@ -145,7 +145,7 @@ export default defineWidget('Editor', template, {
     },
 
     _setupEditor() {
-        log.call(this, '_setupEditor');
+        this.log('_setupEditor');
 
         this._editor = new SimpleMDE({
             element: this.textAreaNode,
@@ -305,7 +305,7 @@ export default defineWidget('Editor', template, {
     },
 
     _updateRendering(cb) {
-        log.call(this, '_updateRendering');
+        this.log('_updateRendering');
 
         fetchAttr(this._obj, this.mdAttr)
             .then(value => {
@@ -315,18 +315,18 @@ export default defineWidget('Editor', template, {
                         this._editor.value(value);
                     }
                 }
-                runCallback.call(this, cb, '_updateRendering');
+                this.runCallback(cb, '_updateRendering');
             }, e => {
                 this._setVisibility(false);
                 console.warn(`Error fetching ${this.mdAttr} from context object`, e);
-                runCallback.call(this, cb, '_updateRendering');
+                this.runCallback(cb, '_updateRendering');
             });
 
         this._resetSubscriptions();
     },
 
     _resetSubscriptions() {
-        log.call(this, '_resetSubscriptions');
+        this.log('_resetSubscriptions');
         this.unsubscribeAll();
 
         if (this._obj) {

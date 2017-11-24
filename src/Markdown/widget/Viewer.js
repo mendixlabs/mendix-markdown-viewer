@@ -1,12 +1,13 @@
-import { defineWidget } from '@/helpers/widget';
-import { log, runCallback } from '@/helpers';
+import {
+    defineWidget,
+} from 'widget-base-helpers';
+
 import Libraries from 'Libraries';
 
 import domClass from 'dojo/dom-class';
 import domAttr from 'dojo/dom-attr';
 import html from 'dojo/html';
 
-// The following code will be stripped with our webpack loader and should only be used if you plan on doing styling
 /* develblock:start */
 import loadcss from 'loadcss';
 loadcss(`/widgets/Markdown/widget/ui/Viewer.css`);
@@ -35,7 +36,7 @@ export default defineWidget('Viewer', false, {
     _obj: null,
 
     postCreate() {
-        log.call(this, 'postCreate', this._WIDGET_VERSION);
+        this.log('postCreate', this._WIDGET_VERSION);
         domAttr.set(this.domNode, 'data-widget-version', this._WIDGET_VERSION);
         domClass.toggle(this.domNode, 'markdown-viewer', true);
         this._createConverter();
@@ -44,7 +45,7 @@ export default defineWidget('Viewer', false, {
     },
 
     update(obj, cb) {
-        log.call(this, 'update');
+        this.log('update');
 
         this._obj = obj;
         this._resetSubscriptions();
@@ -58,12 +59,12 @@ export default defineWidget('Viewer', false, {
                 this._updateRendering(cb);
             }
         } else {
-            runCallback.call(this, cb, 'update');
+            this.runCallback(cb, 'update');
         }
     },
 
     _createConverter() {
-        log.call(this, '_createConverter');
+        this.log('_createConverter');
         this.createMD({
             html: this.optHtml,
             xhtmlOut: this.optxHtmlOut,
@@ -74,7 +75,7 @@ export default defineWidget('Viewer', false, {
     },
 
     _updateRendering(cb) {
-        log.call(this, '_updateRendering');
+        this.log('_updateRendering');
         try {
             this._obj.fetch(this.attrText, val => {
                 this._text = val;
@@ -84,12 +85,12 @@ export default defineWidget('Viewer', false, {
                 } else {
                     domClass.add(this.domNode, 'hidden');
                 }
-                runCallback.call(this, cb, 'update');
+                this.runCallback(cb, 'update');
             });
         } catch (e) {
             logger.warn(this.id, e);
             domClass.add(this.domNode, 'hidden');
-            runCallback.call(this, cb, 'update');
+            this.runCallback(cb, 'update');
         }
     },
 
