@@ -136,6 +136,7 @@ export default defineWidget('Editor', template, {
         this._editor = new SimpleMDE({
             element: this.textAreaNode,
             autofocus: true,
+            spellChecker: this.optSpellChecker,
             previewRender: plainText => {
                 return this._md.render(plainText); // Returns HTML from a custom parser
             },

@@ -38,5 +38,10 @@
            <category>Markdown options</category>
            <description>See the following URL for an explanation: https://github.com/markdown-it/markdown-it#init-with-presets-and-options</description>
         </property>
+        <property key="optSpellChecker" type="boolean" defaultValue="true">
+           <caption>Use spell checker</caption>
+           <category>Markdown options</category>
+           <description>Misspelled words are highlighted in red in the markdown editor</description>
+        </property>
     </properties>
 </widget>
