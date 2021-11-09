@@ -97,5 +97,10 @@
                </property>
             </properties>
          </property>
+         <property key="toolbarHideIcons" type="string" required="false">
+            <caption>Buttons to hide</caption>
+            <category>Toolbar</category>
+            <description>Defines which buttons to hide on the toolbar, separated by spaces only. Refer to the SimpleMDE documentation to see what options there are.</description>
+         </property>
     </properties>
 </widget>

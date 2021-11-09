@@ -146,7 +146,7 @@ export default defineWidget('Editor', template, {
             previewRender: plainText => {
                 return this._md.render(plainText); // Returns HTML from a custom parser
             },
-            hideIcons: ["image"],
+            hideIcons: this.toolbarHideIcons.split(" "),
             insertTexts: {
                 horizontalRule: [
                     "",
