@@ -11,6 +11,12 @@ import debounce from 'dojo/debounce';
 
 import template from './Editor.template.html';
 
+import {
+    executeMicroflow,
+    executeNanoflow,
+    openPage,
+} from "@jeltemx/mendix-react-widget-utils";
+
 // The following code will be stripped with our webpack loader and should only be used if you plan on doing styling
 /* develblock:start */
 import loadcss from 'loadcss';
@@ -140,18 +146,19 @@ export default defineWidget('Editor', template, {
             previewRender: plainText => {
                 return this._md.render(plainText); // Returns HTML from a custom parser
             },
+            hideIcons: ["image"],
             insertTexts: {
                 horizontalRule: [
                     "",
                     "\n\n-----\n\n",
                 ],
                 image: [
-                    "![](http://",
+                    "![](https://",
                     ")",
                 ],
                 link: [
                     "[",
-                    "](http://)",
+                    "](https://)",
                 ],
                 table: [
                     "",
@@ -174,7 +181,7 @@ export default defineWidget('Editor', template, {
     },
 
     _getToolbars() {
-        return [
+        const buttonArray = [
             'bold',
             'italic',
             'heading',
@@ -210,6 +217,31 @@ export default defineWidget('Editor', template, {
             'undo',
             'redo',
         ];
+        if(this.toolbarButtons){
+            buttonArray.push('|');
+            this.toolbarButtons.map(button => {
+                buttonArray.push({
+                    name: "customimage",
+                    action: () => {
+                        if ("open" === button.actionButtonOnClickAction){
+                            openPage({
+                                pageName: button.actionButtonOnClickForm,
+                                openAs: button.actionButtonOnClickOpenPageAs,
+                            }, this.mxcontext, true);
+                        }
+                        if ("mf" === button.actionButtonOnClickAction){
+                            executeMicroflow(button.actionButtonOnClickMf, this.mxcontext, this.mxform, true);
+                        }
+                        if ("nf" === button.actionButtonOnClickAction){
+                            executeNanoflow(button.actionButtonOnClickNf, this.mxcontext, this.mxform, true);
+                        }
+                    },
+                    className: button.actionButtonIconClass,
+                    title: button.actionButtonTooltip,
+                });
+            });
+        }
+        return buttonArray;
     },
 
     _setVisibility(visible) {
