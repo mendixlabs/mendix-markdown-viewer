@@ -84,15 +84,13 @@ export default defineWidget('Editor', template, {
 
     // Called after the widget is initialized
     postCreate() {
-        mx.logger.debug(this.id + 'postCreate', this._WIDGET_VERSION);
+        mx.logger.debug(this.id + '_postCreate', this._WIDGET_VERSION);
         domAttr.set(this.domNode, 'data-widget-version', this._WIDGET_VERSION);
 
         // Fix aspect focus handler. This mxui.wm.focus.onfocus screws with our editor. Disabling within our widget
         this._aspectHandler = fixFocusHandler(this.domNode);
         this._addOnDestroyFuncs();
         this._createConverter();
-
-        window._WIDGET = this; // TODO: REMOVE
     },
 
     _createConverter() {
@@ -129,11 +127,6 @@ export default defineWidget('Editor', template, {
                 this._aspectHandler.remove();
             }
         });
-    },
-
-    _isDirty() {
-        // Check if we've changed something
-        return !this._editor.codemirror.isClean();
     },
 
     _setupEditor() {
@@ -176,8 +169,6 @@ export default defineWidget('Editor', template, {
             const val = this._editor.value();
             this._obj.set(this.mdAttr, val);
         }, 250));
-
-        window._EDITOR = this._editor; // TODO: REMOVE
     },
 
     _getToolbars() {
@@ -255,9 +246,7 @@ export default defineWidget('Editor', template, {
             .then(value => {
                 this._setVisibility(true);
                 if (this._editor) {
-                    if (!this._isDirty()) {
-                        this._editor.value(value);
-                    }
+                    this._editor.value(value);
                 }
                 runCallback.call(this, cb, '_updateRendering');
             }, e => {
