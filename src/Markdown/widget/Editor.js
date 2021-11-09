@@ -247,12 +247,19 @@ export default defineWidget('Editor', template, {
     _updateRendering(cb) {
         mx.logger.debug(this.id + '_updateRendering');
 
+        const editor = this._editor;
+
         fetchAttr(this._obj, this.mdAttr)
             .then(value => {
                 this._setVisibility(true);
-                if (this._editor) {
-                    if (this._isClean() || value !== this._editor.value()) {
-                        this._editor.value(value);
+                if (editor) {
+                    if (this._isClean()) {
+                        editor.value(value);
+                    } else if (value !== editor.value()) {
+                        editor.value(value);
+                        const cm = editor.codemirror;
+                        cm.focus();
+                        cm.setCursor(cm.lineCount(), 0);
                     }
                 }
                 runCallback.call(this, cb, '_updateRendering');
