@@ -239,6 +239,11 @@ export default defineWidget('Editor', template, {
         domClass.toggle(this.domNode, 'hidden', !visible);
     },
 
+    _isClean() {
+        // Check if we've changed something
+        return this._editor.codemirror.isClean();
+    },
+
     _updateRendering(cb) {
         mx.logger.debug(this.id + '_updateRendering');
 
@@ -246,7 +251,9 @@ export default defineWidget('Editor', template, {
             .then(value => {
                 this._setVisibility(true);
                 if (this._editor) {
-                    this._editor.value(value);
+                    if (this._isClean() || value !== this._editor.value()) {
+                        this._editor.value(value);
+                    }
                 }
                 runCallback.call(this, cb, '_updateRendering');
             }, e => {
