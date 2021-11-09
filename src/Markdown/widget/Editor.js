@@ -212,7 +212,7 @@ export default defineWidget('Editor', template, {
             buttonArray.push('|');
             this.toolbarButtons.map(button => {
                 buttonArray.push({
-                    name: "customimage",
+                    name: "custombutton",
                     action: () => {
                         if ("open" === button.actionButtonOnClickAction){
                             openPage({
