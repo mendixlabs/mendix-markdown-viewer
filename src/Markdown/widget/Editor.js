@@ -1,5 +1,5 @@
 import { defineWidget } from '@/helpers/widget';
-import { log, runCallback } from '@/helpers';
+import { runCallback } from '@/helpers';
 import { fetchAttr } from '@/helpers/data';
 import { fixFocusHandler } from '@/helpers/focus';
 
@@ -84,7 +84,7 @@ export default defineWidget('Editor', template, {
 
     // Called after the widget is initialized
     postCreate() {
-        log.call(this, 'postCreate', this._WIDGET_VERSION);
+        mx.logger.debug(this.id + 'postCreate', this._WIDGET_VERSION);
         domAttr.set(this.domNode, 'data-widget-version', this._WIDGET_VERSION);
 
         // Fix aspect focus handler. This mxui.wm.focus.onfocus screws with our editor. Disabling within our widget
@@ -96,7 +96,7 @@ export default defineWidget('Editor', template, {
     },
 
     _createConverter() {
-        log.call(this, '_createConverter');
+        mx.logger.debug(this.id + '_createConverter');
         this.createMD({
             html: this.optHtml,
             xhtmlOut: this.optxHtmlOut,
@@ -137,7 +137,7 @@ export default defineWidget('Editor', template, {
     },
 
     _setupEditor() {
-        log.call(this, '_setupEditor');
+        mx.logger.debug(this.id + '_setupEditor');
 
         this._editor = new SimpleMDE({
             element: this.textAreaNode,
@@ -249,7 +249,7 @@ export default defineWidget('Editor', template, {
     },
 
     _updateRendering(cb) {
-        log.call(this, '_updateRendering');
+        mx.logger.debug(this.id + '_updateRendering');
 
         fetchAttr(this._obj, this.mdAttr)
             .then(value => {
@@ -270,7 +270,7 @@ export default defineWidget('Editor', template, {
     },
 
     _resetSubscriptions() {
-        log.call(this, '_resetSubscriptions');
+        mx.logger.debug(this.id + '_resetSubscriptions');
         this.unsubscribeAll();
 
         if (this._obj) {
