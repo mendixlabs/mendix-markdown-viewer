@@ -183,6 +183,7 @@ export default defineWidget('Editor', template, {
             'clean-block',
             'code',
             '|',
+            'horizontal-rule',
             'link',
             'image',
             'table',

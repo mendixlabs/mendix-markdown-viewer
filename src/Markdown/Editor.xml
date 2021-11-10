@@ -85,12 +85,12 @@
                         <enumerationValue key="modal">Blocking popup</enumerationValue>
                      </enumerationValues>
                </property>
-               <property key="actionButtonIconClass" type="string" required="false" defaultValue="fa fa-plus">
+               <property key="actionButtonIconClass" type="string" required="true" defaultValue="fa fa-plus">
                      <caption>FontAwesome icon class</caption>
                      <category>UI</category>
                      <description>FontAwesome icon class to apply to the button</description>
                </property>
-               <property key="actionButtonTooltip" type="string" required="false" defaultValue="">
+               <property key="actionButtonTooltip" type="string" required="true" defaultValue="">
                      <caption>Button tooltip</caption>
                      <category>UI</category>
                      <description>Use this as a tooltip for the button</description>
