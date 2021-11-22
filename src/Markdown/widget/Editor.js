@@ -160,6 +160,18 @@ export default defineWidget('Editor', template, {
                     "::: alert info\n",
                     "\n:::",
                 ],
+                alignLeft: [
+                    "<",
+                    "<",
+                ],
+                alignCenter: [
+                    "^",
+                    "^",
+                ],
+                alignRight: [
+                    ">",
+                    ">",
+                ],
             },
             toolbar: this._getToolbars(),
         });
@@ -177,6 +189,43 @@ export default defineWidget('Editor', template, {
             'bold',
             'italic',
             'heading',
+            '|',
+            {
+                name: "align-left",
+                action: editor => {
+                    const cm = editor.codemirror;
+                    const stat = this._editor.getState();
+                    const options = this._editor.options;
+
+                    _replaceSelection(cm, stat.alignLeft, options.insertTexts.alignLeft);
+                },
+                className: "fa fa-align-left",
+                title: "Links uitlijnen",
+            },
+            {
+                name: "align-center",
+                action: editor => {
+                    const cm = editor.codemirror;
+                    const stat = this._editor.getState();
+                    const options = this._editor.options;
+
+                    _replaceSelection(cm, stat.alignCenter, options.insertTexts.alignCenter);
+                },
+                className: "fa fa-align-center",
+                title: "Midden uitlijnen",
+            },
+            {
+                name: "align-left",
+                action: editor => {
+                    const cm = editor.codemirror;
+                    const stat = this._editor.getState();
+                    const options = this._editor.options;
+
+                    _replaceSelection(cm, stat.alignRight, options.insertTexts.alignRight);
+                },
+                className: "fa fa-align-right",
+                title: "Rechts uitlijnen",
+            },
             '|',
             'quote',
             'unordered-list',
