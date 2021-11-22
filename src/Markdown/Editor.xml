@@ -38,5 +38,69 @@
            <category>Markdown options</category>
            <description>See the following URL for an explanation: https://github.com/markdown-it/markdown-it#init-with-presets-and-options</description>
         </property>
+        <property key="optSpellChecker" type="boolean" defaultValue="true">
+           <caption>Use spell checker</caption>
+           <category>Markdown options</category>
+           <description>Misspelled words are highlighted in red in the markdown editor</description>
+        </property>
+         <property key="toolbarButtons" type="object" isList="true" required="false">
+            <caption>Extra buttons</caption>
+            <category>Toolbar</category>
+            <description>These buttons allow additional functionality and are added directly to the toolbar.</description>
+            <properties>
+               <property key="actionButtonOnClickAction" type="enumeration" defaultValue="mf">
+                     <caption>Button click action</caption>
+                     <category>Action</category>
+                     <description></description>
+                     <enumerationValues>
+                        <enumerationValue key="mf">Microflow</enumerationValue>
+                        <enumerationValue key="nf">Nanoflow</enumerationValue>
+                        <enumerationValue key="open">Open page</enumerationValue>
+                     </enumerationValues>
+               </property>
+               <property key="actionButtonOnClickMf" type="microflow" required="false">
+                     <caption>Button click Microflow</caption>
+                     <category>Action</category>
+                     <description></description>
+                     <returnType type="Void" />
+               </property>
+               <property key="actionButtonOnClickNf" type="nanoflow" required="false">
+                     <caption>Button click Nanoflow</caption>
+                     <category>Action</category>
+                     <description></description>
+                     <returnType type="Void" />
+               </property>
+               <property key="actionButtonOnClickForm" type="form" required="false">
+                     <caption>Button click Page</caption>
+                     <category>Action</category>
+                     <description></description>
+               </property>
+               <property key="actionButtonOnClickOpenPageAs" type="enumeration" defaultValue="content">
+                     <caption>Open page as</caption>
+                     <category>Action</category>
+                     <description/>
+                     <enumerationValues>
+                        <enumerationValue key="content">Full page</enumerationValue>
+                        <enumerationValue key="popup">Popup</enumerationValue>
+                        <enumerationValue key="modal">Blocking popup</enumerationValue>
+                     </enumerationValues>
+               </property>
+               <property key="actionButtonIconClass" type="string" required="true" defaultValue="fa fa-plus">
+                     <caption>FontAwesome icon class</caption>
+                     <category>UI</category>
+                     <description>FontAwesome icon class to apply to the button</description>
+               </property>
+               <property key="actionButtonTooltip" type="string" required="true" defaultValue="">
+                     <caption>Button tooltip</caption>
+                     <category>UI</category>
+                     <description>Use this as a tooltip for the button</description>
+               </property>
+            </properties>
+         </property>
+         <property key="toolbarHideIcons" type="string" required="false">
+            <caption>Buttons to hide</caption>
+            <category>Toolbar</category>
+            <description>Defines which buttons to hide on the toolbar, separated by spaces only. Refer to the SimpleMDE documentation to see what options there are.</description>
+         </property>
     </properties>
 </widget>

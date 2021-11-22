@@ -17,7 +17,7 @@
     "filesFolder": "widget",
     "libraries": true,
     "core": false,
-    "path": false
+    "path": "C:/Users/Marius/Documents/Mendix/Playground-main"
   },
   "keywords": [
     "widget",
@@ -68,6 +68,7 @@
     "xml-webpack-plugin": "^0.0.2"
   },
   "dependencies": {
+    "@jeltemx/mendix-react-widget-utils": "^0.9.0",
     "markdown-it": "^8.4.0",
     "markdown-it-container": "^2.0.0",
     "markdown-it-prism": "^1.1.1",

@@ -1,5 +1,5 @@
 import { defineWidget } from '@/helpers/widget';
-import { log, runCallback } from '@/helpers';
+import { runCallback } from '@/helpers';
 import { fetchAttr } from '@/helpers/data';
 import { fixFocusHandler } from '@/helpers/focus';
 
@@ -10,6 +10,12 @@ import domClass from 'dojo/dom-class';
 import debounce from 'dojo/debounce';
 
 import template from './Editor.template.html';
+
+import {
+    executeMicroflow,
+    executeNanoflow,
+    openPage,
+} from "@jeltemx/mendix-react-widget-utils";
 
 // The following code will be stripped with our webpack loader and should only be used if you plan on doing styling
 /* develblock:start */
@@ -78,19 +84,17 @@ export default defineWidget('Editor', template, {
 
     // Called after the widget is initialized
     postCreate() {
-        log.call(this, 'postCreate', this._WIDGET_VERSION);
+        mx.logger.debug(this.id + '_postCreate', this._WIDGET_VERSION);
         domAttr.set(this.domNode, 'data-widget-version', this._WIDGET_VERSION);
 
         // Fix aspect focus handler. This mxui.wm.focus.onfocus screws with our editor. Disabling within our widget
         this._aspectHandler = fixFocusHandler(this.domNode);
         this._addOnDestroyFuncs();
         this._createConverter();
-
-        window._WIDGET = this; // TODO: REMOVE
     },
 
     _createConverter() {
-        log.call(this, '_createConverter');
+        mx.logger.debug(this.id + '_createConverter');
         this.createMD({
             html: this.optHtml,
             xhtmlOut: this.optxHtmlOut,
@@ -125,32 +129,29 @@ export default defineWidget('Editor', template, {
         });
     },
 
-    _isDirty() {
-        // Check if we've changed something
-        return !this._editor.codemirror.isClean();
-    },
-
     _setupEditor() {
-        log.call(this, '_setupEditor');
+        mx.logger.debug(this.id + '_setupEditor');
 
         this._editor = new SimpleMDE({
             element: this.textAreaNode,
             autofocus: true,
+            spellChecker: this.optSpellChecker,
             previewRender: plainText => {
                 return this._md.render(plainText); // Returns HTML from a custom parser
             },
+            hideIcons: this.toolbarHideIcons.split(" "),
             insertTexts: {
                 horizontalRule: [
                     "",
                     "\n\n-----\n\n",
                 ],
                 image: [
-                    "![](http://",
+                    "![](https://",
                     ")",
                 ],
                 link: [
                     "[",
-                    "](http://)",
+                    "](https://)",
                 ],
                 table: [
                     "",
@@ -180,12 +181,10 @@ export default defineWidget('Editor', template, {
             const val = this._editor.value();
             this._obj.set(this.mdAttr, val);
         }, 250));
-
-        window._EDITOR = this._editor; // TODO: REMOVE
     },
 
     _getToolbars() {
-        return [
+        const buttonArray = [
             'bold',
             'italic',
             'heading',
@@ -233,6 +232,7 @@ export default defineWidget('Editor', template, {
             'clean-block',
             'code',
             '|',
+            'horizontal-rule',
             'link',
             'image',
             'table',
@@ -258,21 +258,58 @@ export default defineWidget('Editor', template, {
             'undo',
             'redo',
         ];
+        if(this.toolbarButtons){
+            buttonArray.push('|');
+            this.toolbarButtons.map(button => {
+                buttonArray.push({
+                    name: "custombutton",
+                    action: () => {
+                        if ("open" === button.actionButtonOnClickAction){
+                            openPage({
+                                pageName: button.actionButtonOnClickForm,
+                                openAs: button.actionButtonOnClickOpenPageAs,
+                            }, this.mxcontext, true);
+                        }
+                        if ("mf" === button.actionButtonOnClickAction){
+                            executeMicroflow(button.actionButtonOnClickMf, this.mxcontext, this.mxform, true);
+                        }
+                        if ("nf" === button.actionButtonOnClickAction){
+                            executeNanoflow(button.actionButtonOnClickNf, this.mxcontext, this.mxform, true);
+                        }
+                    },
+                    className: button.actionButtonIconClass,
+                    title: button.actionButtonTooltip,
+                });
+            });
+        }
+        return buttonArray;
     },
 
     _setVisibility(visible) {
         domClass.toggle(this.domNode, 'hidden', !visible);
     },
 
+    _isClean() {
+        // Check if we've changed something
+        return this._editor.codemirror.isClean();
+    },
+
     _updateRendering(cb) {
-        log.call(this, '_updateRendering');
+        mx.logger.debug(this.id + '_updateRendering');
+
+        const editor = this._editor;
 
         fetchAttr(this._obj, this.mdAttr)
             .then(value => {
                 this._setVisibility(true);
-                if (this._editor) {
-                    if (!this._isDirty()) {
-                        this._editor.value(value);
+                if (editor) {
+                    if (this._isClean()) {
+                        editor.value(value);
+                    } else if (value !== editor.value()) {
+                        editor.value(value);
+                        const cm = editor.codemirror;
+                        cm.focus();
+                        cm.setCursor(cm.lineCount(), 0);
                     }
                 }
                 runCallback.call(this, cb, '_updateRendering');
@@ -286,7 +323,7 @@ export default defineWidget('Editor', template, {
     },
 
     _resetSubscriptions() {
-        log.call(this, '_resetSubscriptions');
+        mx.logger.debug(this.id + '_resetSubscriptions');
         this.unsubscribeAll();
 
         if (this._obj) {
