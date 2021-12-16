@@ -173,6 +173,10 @@ export default defineWidget('Editor', template, {
                     "=>\n",
                     "\n=>",
                 ],
+                anchor: [
+                    "{#",
+                    "}",
+                ],
             },
             toolbar: this._getToolbars(),
         });
@@ -188,6 +192,18 @@ export default defineWidget('Editor', template, {
             'bold',
             'italic',
             'heading',
+            {
+                name: "anchor",
+                action: editor => {
+                    const cm = editor.codemirror;
+                    const stat = this._editor.getState();
+                    const options = this._editor.options;
+
+                    _replaceSelection(cm, stat.anchor, options.insertTexts.anchor);
+                },
+                className: "fa fa-anchor",
+                title: "ID toevoegen",
+            },
             '|',
             {
                 name: "align-left",
