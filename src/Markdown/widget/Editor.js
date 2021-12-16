@@ -162,16 +162,16 @@ export default defineWidget('Editor', template, {
                     "\n:::",
                 ],
                 alignLeft: [
-                    "<",
-                    "<",
+                    "<=\n",
+                    "\n<=",
                 ],
                 alignCenter: [
-                    "^",
-                    "^",
+                    "=>\n",
+                    "\n<=",
                 ],
                 alignRight: [
-                    ">",
-                    ">",
+                    "=>\n",
+                    "\n=>",
                 ],
             },
             toolbar: this._getToolbars(),
