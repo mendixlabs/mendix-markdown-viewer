@@ -31,35 +31,20 @@ import SimpleMDE from 'simplemde';
 import 'codemirror/addon/display/rulers';
 
 // Blatantly copied from SimpleMDE to do my own inserts
-function _replaceSelection(cm, active, startEnd, url) {
+function _replaceSelection(cm, startEnd) {
     if (/editor-preview-active/.test(cm.getWrapperElement().lastChild.className)){
         return;
     }
 
-    let text;
-    let start = startEnd[ 0 ];
-    let end = startEnd[ 1 ];
+    const start = startEnd[ 0 ];
+    const end = startEnd[ 1 ];
     const startPoint = cm.getCursor("start");
     const endPoint = cm.getCursor("end");
-    if (url) {
-        end = end.replace("#url#", url);
-    }
-    if (active) {
-        text = cm.getLine(startPoint.line);
-        start = text.slice(0, startPoint.ch);
-        end = text.slice(startPoint.ch);
-        cm.replaceRange(start + end, {
-            line: startPoint.line,
-            ch: 0,
-        });
-    } else {
-        text = cm.getSelection();
-        cm.replaceSelection(start + text + end);
-
-        startPoint.ch += start.length;
-        if (startPoint !== endPoint) {
-            endPoint.ch += start.length;
-        }
+    const text = cm.getSelection();
+    cm.replaceSelection(start + text + end);
+    startPoint.ch += start.length;
+    if (startPoint !== endPoint) {
+        endPoint.ch += start.length;
     }
     cm.setSelection(startPoint, endPoint);
     cm.focus();
@@ -155,23 +140,27 @@ export default defineWidget('Editor', template, {
                 ],
                 table: [
                     "",
-                    "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n",
+                    "\n\n| Kolom 1 | Kolom 2 | Kolom 3 |\n| -------- | -------- | -------- |\n| Tekst     | Tekst      | Tekst     |\n\n",
                 ],
                 alert: [
                     "::: alert info\n",
                     "\n:::",
                 ],
                 alignLeft: [
-                    "<",
-                    "<",
+                    "<= ",
+                    " <=",
                 ],
                 alignCenter: [
-                    "^",
-                    "^",
+                    "=> ",
+                    " <=",
                 ],
                 alignRight: [
-                    ">",
-                    ">",
+                    "=> ",
+                    " =>",
+                ],
+                alignJustify: [
+                    "<= ",
+                    " =>",
                 ],
             },
             toolbar: this._getToolbars(),
@@ -192,11 +181,7 @@ export default defineWidget('Editor', template, {
             {
                 name: "align-left",
                 action: editor => {
-                    const cm = editor.codemirror;
-                    const stat = this._editor.getState();
-                    const options = this._editor.options;
-
-                    _replaceSelection(cm, stat.alignLeft, options.insertTexts.alignLeft);
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alignLeft);
                 },
                 className: "fa fa-align-left",
                 title: "Links uitlijnen",
@@ -204,11 +189,7 @@ export default defineWidget('Editor', template, {
             {
                 name: "align-center",
                 action: editor => {
-                    const cm = editor.codemirror;
-                    const stat = this._editor.getState();
-                    const options = this._editor.options;
-
-                    _replaceSelection(cm, stat.alignCenter, options.insertTexts.alignCenter);
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alignCenter);
                 },
                 className: "fa fa-align-center",
                 title: "Midden uitlijnen",
@@ -216,14 +197,18 @@ export default defineWidget('Editor', template, {
             {
                 name: "align-left",
                 action: editor => {
-                    const cm = editor.codemirror;
-                    const stat = this._editor.getState();
-                    const options = this._editor.options;
-
-                    _replaceSelection(cm, stat.alignRight, options.insertTexts.alignRight);
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alignRight);
                 },
                 className: "fa fa-align-right",
                 title: "Rechts uitlijnen",
+            },
+            {
+                name: "align-justify",
+                action: editor => {
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alignJustify);
+                },
+                className: "fa fa-align-justify",
+                title: "Tekst uitvullen",
             },
             '|',
             'quote',
@@ -239,11 +224,7 @@ export default defineWidget('Editor', template, {
             {
                 name: "alert",
                 action: editor => {
-                    const cm = editor.codemirror;
-                    const stat = this._editor.getState();
-                    const options = this._editor.options;
-
-                    _replaceSelection(cm, stat.alert, options.insertTexts.alert);
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alert);
                 },
                 className: "fa fa-exclamation-circle",
                 title: "Alert",
