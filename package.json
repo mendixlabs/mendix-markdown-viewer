@@ -17,7 +17,7 @@
     "filesFolder": "widget",
     "libraries": true,
     "core": false,
-    "path": "C:/Users/Marius/Documents/Mendix/Playground-main"
+    "path": "dist"
   },
   "keywords": [
     "widget",
