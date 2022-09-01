@@ -11,26 +11,12 @@ import debounce from 'dojo/debounce';
 
 import template from './Editor.template.html';
 
-import {
-    executeMicroflow,
-    executeNanoflow,
-    openPage,
-} from "@jeltemx/mendix-react-widget-utils";
-
-// The following code will be stripped with our webpack loader and should only be used if you plan on doing styling
-/* develblock:start */
-// import loadcss from 'loadcss';
-// loadcss(`/widgets/Markdown/widget/ui/Editor.css`);
-/* develblock:end */
-
+import { executeMicroflow, executeNanoflow, openPage } from '@jeltemx/mendix-react-widget-utils';
 import 'easymde/dist/easymde.min.css';
 import 'prismjs/themes/prism.css';
-// import './Editor.scss';
-
 import EasyMDE from 'easymde';
 import 'codemirror/addon/display/rulers';
 
-// Blatantly copied from SimpleMDE to do my own inserts
 function _replaceSelection(cm, startEnd) {
     if (/editor-preview-active/.test(cm.getWrapperElement().lastChild.className)){
         return;
@@ -187,7 +173,7 @@ export default defineWidget('Editor', template, {
                     _replaceSelection(editor.codemirror, editor.options.insertTexts.anchor);
                 },
                 className: "fa fa-anchor",
-                title: "ID toevoegen",
+                title: "Add anchor",
             },
             '|',
             {
@@ -196,7 +182,7 @@ export default defineWidget('Editor', template, {
                     _replaceSelection(editor.codemirror, editor.options.insertTexts.alignLeft);
                 },
                 className: "fa fa-align-left",
-                title: "Links uitlijnen",
+                title: "Align left",
             },
             {
                 name: "align-center",
@@ -204,15 +190,15 @@ export default defineWidget('Editor', template, {
                     _replaceSelection(editor.codemirror, editor.options.insertTexts.alignCenter);
                 },
                 className: "fa fa-align-center",
-                title: "Midden uitlijnen",
+                title: "Align center",
             },
             {
-                name: "align-left",
+                name: "align-right",
                 action: editor => {
                     _replaceSelection(editor.codemirror, editor.options.insertTexts.alignRight);
                 },
                 className: "fa fa-align-right",
-                title: "Rechts uitlijnen",
+                title: "Align right",
             },
             {
                 name: "align-justify",
@@ -220,7 +206,7 @@ export default defineWidget('Editor', template, {
                     _replaceSelection(editor.codemirror, editor.options.insertTexts.alignJustify);
                 },
                 className: "fa fa-align-justify",
-                title: "Tekst uitvullen",
+                title: "Align justified",
             },
             '|',
             'quote',

@@ -65,8 +65,7 @@ const getPaths = (file, srcFolder, destFolder) => {
 };
 
 // Base tasks
-
-gulp.task("watch:src", () => {
+const watchSrc = () => {
     return watch(
         "src/**/*",
         {
@@ -76,9 +75,9 @@ gulp.task("watch:src", () => {
             runWebpack();
         }
     );
-});
+};
 
-gulp.task("watch:build", () => {
+const watchBuild = () => {
     return watch(
         "build/**/*",
         {
@@ -95,9 +94,9 @@ gulp.task("watch:build", () => {
             }
         }
     );
-});
+};
 
-gulp.task("watch:dist", () => {
+const watchDist = () => {
     return watch(
         `dist/${pkg.widget.package}.mpk`,
         {
@@ -111,24 +110,11 @@ gulp.task("watch:dist", () => {
             }
         }
     );
-});
+};
 
 const clean = () => del(["dist", "build"], { force: true });
 const buildDist = (callback) => runWebpack(callback);
-// gulp.task("clean", `Cleanup the dist/build`, () => {
-//     return ;
-// });
-
-// Final tasks
-
-// gulp.task("build", "Build the widget", (done) => {
-//     sequence("clean", "build-dist", done);
-// });
-
-// gulp.task("build-dist", (callback) => {
-//     runWebpack(callback);
-// });
-
-// gulp.task("default", gulp.series("watch:src", "watch:build", "watch:dist"));
+const dev = gulp.series(watchSrc, watchBuild, watchDist);
 const build = gulp.series(clean, buildDist);
 exports.build = build;
+exports.default = dev;
