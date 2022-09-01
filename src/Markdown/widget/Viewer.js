@@ -8,12 +8,12 @@ import html from 'dojo/html';
 
 // The following code will be stripped with our webpack loader and should only be used if you plan on doing styling
 /* develblock:start */
-import loadcss from 'loadcss';
-loadcss(`/widgets/Markdown/widget/ui/Viewer.css`);
+// import loadcss from 'loadcss';
+// loadcss(`/widgets/Markdown/widget/ui/Viewer.css`);
 /* develblock:end */
 
 import 'prismjs/themes/prism.css';
-import './Viewer.scss';
+// import './Viewer.scss';
 
 export default defineWidget('Viewer', false, {
 

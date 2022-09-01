@@ -19,15 +19,15 @@ import {
 
 // The following code will be stripped with our webpack loader and should only be used if you plan on doing styling
 /* develblock:start */
-import loadcss from 'loadcss';
-loadcss(`/widgets/Markdown/widget/ui/Editor.css`);
+// import loadcss from 'loadcss';
+// loadcss(`/widgets/Markdown/widget/ui/Editor.css`);
 /* develblock:end */
 
-import 'simplemde/dist/simplemde.min.css';
+import 'easymde/dist/easymde.min.css';
 import 'prismjs/themes/prism.css';
-import './Editor.scss';
+// import './Editor.scss';
 
-import SimpleMDE from 'simplemde';
+import EasyMDE from 'easymde';
 import 'codemirror/addon/display/rulers';
 
 // Blatantly copied from SimpleMDE to do my own inserts
@@ -117,7 +117,7 @@ export default defineWidget('Editor', template, {
     _setupEditor() {
         mx.logger.debug(this.id + '_setupEditor');
 
-        this._editor = new SimpleMDE({
+        this._editor = new EasyMDE({
             element: this.textAreaNode,
             autofocus: true,
             spellChecker: this.optSpellChecker,
