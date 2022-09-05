@@ -1,7 +1,7 @@
 import { defineWidget } from '@/helpers/widget';
 import { runCallback } from '@/helpers';
 import { fetchAttr } from '@/helpers/data';
-import { fixFocusHandler } from '@/helpers/focus';
+// import { fixFocusHandler } from '@/helpers/focus';
 
 import Libraries from 'Libraries';
 
@@ -59,7 +59,7 @@ export default defineWidget('Editor', template, {
         domAttr.set(this.domNode, 'data-widget-version', this._WIDGET_VERSION);
 
         // Fix aspect focus handler. This mxui.wm.focus.onfocus screws with our editor. Disabling within our widget
-        this._aspectHandler = fixFocusHandler(this.domNode);
+        // this._aspectHandler = fixFocusHandler(this.domNode);
         this._addOnDestroyFuncs();
         this._createConverter();
     },
@@ -105,7 +105,7 @@ export default defineWidget('Editor', template, {
 
         this._editor = new EasyMDE({
             element: this.textAreaNode,
-            autofocus: true,
+            // autofocus: true,
             spellChecker: this.optSpellChecker,
             previewRender: plainText => {
                 return this._md.render(plainText); // Returns HTML from a custom parser
@@ -281,15 +281,8 @@ export default defineWidget('Editor', template, {
         fetchAttr(this._obj, this.mdAttr)
             .then(value => {
                 this._setVisibility(true);
-                if (editor) {
-                    if (this._isClean()) {
-                        editor.value(value);
-                    } else if (value !== editor.value()) {
-                        editor.value(value);
-                        const cm = editor.codemirror;
-                        cm.focus();
-                        cm.setCursor(cm.lineCount(), 0);
-                    }
+                if (editor && this._isClean()) {
+                    editor.value(value);
                 }
                 runCallback.call(this, cb, '_updateRendering');
             }, e => {
