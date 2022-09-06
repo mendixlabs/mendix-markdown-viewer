@@ -1,7 +1,7 @@
 import { defineWidget } from '@/helpers/widget';
-import { log, runCallback } from '@/helpers';
+import { runCallback } from '@/helpers';
 import { fetchAttr } from '@/helpers/data';
-import { fixFocusHandler } from '@/helpers/focus';
+// import { fixFocusHandler } from '@/helpers/focus';
 
 import Libraries from 'Libraries';
 
@@ -11,49 +11,26 @@ import debounce from 'dojo/debounce';
 
 import template from './Editor.template.html';
 
-// The following code will be stripped with our webpack loader and should only be used if you plan on doing styling
-/* develblock:start */
-import loadcss from 'loadcss';
-loadcss(`/widgets/Markdown/widget/ui/Editor.css`);
-/* develblock:end */
-
-import 'simplemde/dist/simplemde.min.css';
+import { executeMicroflow, executeNanoflow, openPage } from '@jeltemx/mendix-react-widget-utils';
+import 'easymde/dist/easymde.min.css';
 import 'prismjs/themes/prism.css';
-import './Editor.scss';
-
-import SimpleMDE from 'simplemde';
+import EasyMDE from 'easymde';
 import 'codemirror/addon/display/rulers';
 
-// Blatantly copied from SimpleMDE to do my own inserts
-function _replaceSelection(cm, active, startEnd, url) {
+function _replaceSelection(cm, startEnd) {
     if (/editor-preview-active/.test(cm.getWrapperElement().lastChild.className)){
         return;
     }
 
-    let text;
-    let start = startEnd[ 0 ];
-    let end = startEnd[ 1 ];
+    const start = startEnd[ 0 ];
+    const end = startEnd[ 1 ];
     const startPoint = cm.getCursor("start");
     const endPoint = cm.getCursor("end");
-    if (url) {
-        end = end.replace("#url#", url);
-    }
-    if (active) {
-        text = cm.getLine(startPoint.line);
-        start = text.slice(0, startPoint.ch);
-        end = text.slice(startPoint.ch);
-        cm.replaceRange(start + end, {
-            line: startPoint.line,
-            ch: 0,
-        });
-    } else {
-        text = cm.getSelection();
-        cm.replaceSelection(start + text + end);
-
-        startPoint.ch += start.length;
-        if (startPoint !== endPoint) {
-            endPoint.ch += start.length;
-        }
+    const text = cm.getSelection();
+    cm.replaceSelection(start + text + end);
+    startPoint.ch += start.length;
+    if (startPoint !== endPoint) {
+        endPoint.ch += start.length;
     }
     cm.setSelection(startPoint, endPoint);
     cm.focus();
@@ -78,19 +55,17 @@ export default defineWidget('Editor', template, {
 
     // Called after the widget is initialized
     postCreate() {
-        log.call(this, 'postCreate', this._WIDGET_VERSION);
+        mx.logger.debug(this.id + '_postCreate', this._WIDGET_VERSION);
         domAttr.set(this.domNode, 'data-widget-version', this._WIDGET_VERSION);
 
         // Fix aspect focus handler. This mxui.wm.focus.onfocus screws with our editor. Disabling within our widget
-        this._aspectHandler = fixFocusHandler(this.domNode);
+        // this._aspectHandler = fixFocusHandler(this.domNode);
         this._addOnDestroyFuncs();
         this._createConverter();
-
-        window._WIDGET = this; // TODO: REMOVE
     },
 
     _createConverter() {
-        log.call(this, '_createConverter');
+        mx.logger.debug(this.id + '_createConverter');
         this.createMD({
             html: this.optHtml,
             xhtmlOut: this.optxHtmlOut,
@@ -125,40 +100,57 @@ export default defineWidget('Editor', template, {
         });
     },
 
-    _isDirty() {
-        // Check if we've changed something
-        return !this._editor.codemirror.isClean();
-    },
-
     _setupEditor() {
-        log.call(this, '_setupEditor');
+        mx.logger.debug(this.id + '_setupEditor');
 
-        this._editor = new SimpleMDE({
+        this._editor = new EasyMDE({
             element: this.textAreaNode,
-            autofocus: true,
+            // autofocus: true,
+            spellChecker: this.optSpellChecker,
             previewRender: plainText => {
                 return this._md.render(plainText); // Returns HTML from a custom parser
             },
+            hideIcons: this.toolbarHideIcons.split(" "),
             insertTexts: {
                 horizontalRule: [
                     "",
                     "\n\n-----\n\n",
                 ],
                 image: [
-                    "![](http://",
+                    "![](https://",
                     ")",
                 ],
                 link: [
                     "[",
-                    "](http://)",
+                    "](https://)",
                 ],
                 table: [
                     "",
-                    "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n",
+                    "\n\n| Kolom 1 | Kolom 2 | Kolom 3 |\n| -------- | -------- | -------- |\n| Tekst     | Tekst      | Tekst     |\n\n",
                 ],
                 alert: [
                     "::: alert info\n",
                     "\n:::",
+                ],
+                alignLeft: [
+                    "<=\n",
+                    "\n<=",
+                ],
+                alignCenter: [
+                    "=>\n",
+                    "\n<=",
+                ],
+                alignRight: [
+                    "=>\n",
+                    "\n=>",
+                ],
+                alignJustify: [
+                    "<=\n",
+                    "\n=>",
+                ],
+                anchor: [
+                    "{#",
+                    "}",
                 ],
             },
             toolbar: this._getToolbars(),
@@ -168,15 +160,54 @@ export default defineWidget('Editor', template, {
             const val = this._editor.value();
             this._obj.set(this.mdAttr, val);
         }, 250));
-
-        window._EDITOR = this._editor; // TODO: REMOVE
     },
 
     _getToolbars() {
-        return [
+        const buttonArray = [
             'bold',
             'italic',
             'heading',
+            {
+                name: "anchor",
+                action: editor => {
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.anchor);
+                },
+                className: "fa fa-anchor",
+                title: "Add anchor",
+            },
+            '|',
+            {
+                name: "align-left",
+                action: editor => {
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alignLeft);
+                },
+                className: "fa fa-align-left",
+                title: "Align left",
+            },
+            {
+                name: "align-center",
+                action: editor => {
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alignCenter);
+                },
+                className: "fa fa-align-center",
+                title: "Align center",
+            },
+            {
+                name: "align-right",
+                action: editor => {
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alignRight);
+                },
+                className: "fa fa-align-right",
+                title: "Align right",
+            },
+            {
+                name: "align-justify",
+                action: editor => {
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alignJustify);
+                },
+                className: "fa fa-align-justify",
+                title: "Align justified",
+            },
             '|',
             'quote',
             'unordered-list',
@@ -184,17 +215,14 @@ export default defineWidget('Editor', template, {
             'clean-block',
             'code',
             '|',
+            'horizontal-rule',
             'link',
             'image',
             'table',
             {
                 name: "alert",
                 action: editor => {
-                    const cm = editor.codemirror;
-                    const stat = this._editor.getState();
-                    const options = this._editor.options;
-
-                    _replaceSelection(cm, stat.alert, options.insertTexts.alert);
+                    _replaceSelection(editor.codemirror, editor.options.insertTexts.alert);
                 },
                 className: "fa fa-exclamation-circle",
                 title: "Alert",
@@ -209,22 +237,52 @@ export default defineWidget('Editor', template, {
             'undo',
             'redo',
         ];
+        if(this.toolbarButtons){
+            buttonArray.push('|');
+            this.toolbarButtons.map(button => {
+                buttonArray.push({
+                    name: button.actionButtonTooltip,
+                    action: () => {
+                        if ("open" === button.actionButtonOnClickAction){
+                            openPage({
+                                pageName: button.actionButtonOnClickForm,
+                                openAs: button.actionButtonOnClickOpenPageAs,
+                            }, this.mxcontext, true);
+                        }
+                        if ("mf" === button.actionButtonOnClickAction){
+                            executeMicroflow(button.actionButtonOnClickMf, this.mxcontext, this.mxform, true);
+                        }
+                        if ("nf" === button.actionButtonOnClickAction){
+                            executeNanoflow(button.actionButtonOnClickNf, this.mxcontext, this.mxform, true);
+                        }
+                    },
+                    className: button.actionButtonIconClass,
+                    title: button.actionButtonTooltip,
+                });
+            });
+        }
+        return buttonArray;
     },
 
     _setVisibility(visible) {
         domClass.toggle(this.domNode, 'hidden', !visible);
     },
 
+    _isClean() {
+        // Check if we've changed something
+        return this._editor.codemirror.isClean();
+    },
+
     _updateRendering(cb) {
-        log.call(this, '_updateRendering');
+        mx.logger.debug(this.id + '_updateRendering');
+
+        const editor = this._editor;
 
         fetchAttr(this._obj, this.mdAttr)
             .then(value => {
                 this._setVisibility(true);
-                if (this._editor) {
-                    if (!this._isDirty()) {
-                        this._editor.value(value);
-                    }
+                if (editor && this._isClean()) {
+                    editor.value(value);
                 }
                 runCallback.call(this, cb, '_updateRendering');
             }, e => {
@@ -237,7 +295,7 @@ export default defineWidget('Editor', template, {
     },
 
     _resetSubscriptions() {
-        log.call(this, '_resetSubscriptions');
+        mx.logger.debug(this.id + '_resetSubscriptions');
         this.unsubscribeAll();
 
         if (this._obj) {
